@@ -24,6 +24,46 @@ A production-grade AI agent that translates natural language into SQL queries us
 
 ## 🏗️ Architecture
 ---
+AI Agent – Natural Language to SQL (with LangChain)
+---------------------------------------------------
+
+User Input (Natural Language)
+         │
+         ▼
+   Router Node
+"Is this about the database?"
+         │
+    ┌────┴────┐
+    NO       YES
+    │         │
+    ▼         ▼
+Fallback   SQL Generator
+"I can     Ollama (Llama 3.2)
+only            │
+answer..."      ▼
+           Query Validator
+           Blocks DELETE/DROP/UPDATE
+                │
+                ▼
+           Query Executor
+           SQLite Database
+                │
+           ┌────┴────┐
+         Error?     No Error
+           │           │
+           ▼           ▼
+     Retry (up to 3x)  │
+     (back to SQL      │
+      Generator)       ▼
+                  Response Formatter
+                  Ollama (Natural Language)
+                       │
+                  ┌────┴────┐
+                YES        NO
+                  │         │
+                  ▼         ▼
+           Send via      Final
+           Gmail SMTP   Response
 
 ## 🛠️ Tech Stack
 
@@ -40,6 +80,35 @@ A production-grade AI agent that translates natural language into SQL queries us
 
 ## 📂 Project Structure
 ---
+text-to-sql-agent/
+│
+├── app.py                    # Streamlit chat interface
+│
+├── src/
+│   ├── main.py               # CLI entry point
+│   ├── config.py             # Configuration
+│   │
+│   ├── agent/
+│   │   ├── state.py          # LangGraph state definition
+│   │   ├── nodes.py          # Graph nodes (router, SQL gen, executor, etc.)
+│   │   ├── graph.py          # Graph assembly with conditional edges
+│   │   ├── llm.py            # Ollama prompt templates
+│   │   └── mock_llm.py       # Mock LLM for testing without Ollama
+│   │
+│   └── tools/
+│       ├── db_tools.py       # SQLite query execution & schema helpers
+│       └── email_tools.py    # Email sending via Gmail SMTP
+│
+├── data/
+│   ├── schema.sql            # Database schema & sample data
+│   └── ecommerce.db          # SQLite database (auto-generated)
+│
+├── tests/
+│   └── test_agent.py         # Unit tests
+│
+├── .env.example              # Email credentials template
+├── requirements.txt          # Python dependencies
+└── README.md                 # This file
 
 ## 🚀 Getting Started
 
